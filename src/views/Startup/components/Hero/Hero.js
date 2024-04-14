@@ -8,8 +8,12 @@ import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { useTheme } from '@mui/material/styles';
-
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Container from 'components/Container';
+import Autocomplete from '@mui/material/Autocomplete';
+import CircularProgress from '@mui/material/CircularProgress';
+import axios from 'axios';
+import { func } from 'prop-types';
 
 const validationSchema = yup.object({
   name: yup
@@ -25,6 +29,21 @@ const validationSchema = yup.object({
     .required('Email is required.'),
 });
 
+const aff = [];
+
+function getList(duration) {
+  return new Promise(() => {
+    axios.get('/faculty/affiliations')
+      .then(function(res)  {
+        aff = res
+        console.log(aff)
+      })
+      .catch(function (err) {
+        console.log(err)
+      })
+  });
+}
+
 const Hero = () => {
   const theme = useTheme();
 
@@ -32,6 +51,38 @@ const Hero = () => {
     name: '',
     email: '',
   };
+
+  const columns: GridColDef[] = [
+    { field: 'id', headerName: 'ID', width: 70 },
+    { field: 'firstName', headerName: 'First name', width: 130 },
+    { field: 'lastName', headerName: 'Last name', width: 130 },
+    {
+      field: 'age',
+      headerName: 'Age',
+      type: 'number',
+      width: 90,
+    },
+    {
+      field: 'fullName',
+      headerName: 'Full name',
+      description: 'This column has a value getter and is not sortable.',
+      sortable: false,
+      width: 160,
+      valueGetter: (value, row) => `${row.firstName || ''} ${row.lastName || ''}`,
+    },
+  ];
+
+  const rows = [
+    { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
+    { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
+    { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
+    { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
+    { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
+    { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
+    { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
+    { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
+    { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+  ];
 
   const onSubmit = (values) => {
     return values;
@@ -43,28 +94,88 @@ const Hero = () => {
     onSubmit,
   });
 
+  const [aff_open, aff_setOpen] = React.useState(false);
+  const [aff_options, aff_setOptions] = React.useState([]);
+  const aff_loading = aff_open && aff_options.length === 0;
+
+  const topFilms = [
+    { title: 'The Shawshank Redemption', year: 1994 },
+    { title: 'The Godfather', year: 1972 },
+    { title: 'The Godfather: Part II', year: 1974 },
+    { title: 'The Dark Knight', year: 2008 },
+    { title: '12 Angry Men', year: 1957 },
+    { title: "Schindler's List", year: 1993 },
+    { title: 'Pulp Fiction', year: 1994 },
+    {
+      title: 'The Lord of the Rings: The Return of the King',
+      year: 2003,
+    },
+    { title: 'The Good, the Bad and the Ugly', year: 1966 },
+    { title: 'Fight Club', year: 1999 },
+    {
+      title: 'The Lord of the Rings: The Fellowship of the Ring',
+      year: 2001,
+    },
+    {
+      title: 'Star Wars: Episode V - The Empire Strikes Back',
+      year: 1980,
+    },
+    { title: 'Forrest Gump', year: 1994 },
+    { title: 'Inception', year: 2010 },
+    {
+      title: 'The Lord of the Rings: The Two Towers',
+      year: 2002,
+    },
+    { title: "One Flew Over the Cuckoo's Nest", year: 1975 },
+    { title: 'Goodfellas', year: 1990 },
+    { title: 'The Matrix', year: 1999 },
+    { title: 'Seven Samurai', year: 1954 },
+    {
+      title: 'Star Wars: Episode IV - A New Hope',
+      year: 1977,
+    },
+    { title: 'City of God', year: 2002 },
+    { title: 'Se7en', year: 1995 },
+    { title: 'The Silence of the Lambs', year: 1991 },
+    { title: "It's a Wonderful Life", year: 1946 },
+    { title: 'Life Is Beautiful', year: 1997 },
+    { title: 'The Usual Suspects', year: 1995 },
+    { title: 'Léon: The Professional', year: 1994 },
+    { title: 'Spirited Away', year: 2001 },
+    { title: 'Saving Private Ryan', year: 1998 },
+    { title: 'Once Upon a Time in the West', year: 1968 },
+    { title: 'American History X', year: 1998 },
+    { title: 'Interstellar', year: 2014 },
+  ];
+
+  React.useEffect(() => {
+    let active = true;
+
+    if (!aff_loading) {
+      return undefined;
+    }
+
+    (async () => {
+      await getList(); // For demo purposes.
+
+      if (active) {
+        aff_setOptions([...topFilms]);
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, [aff_loading]);
+
+  React.useEffect(() => {
+    if (!aff_open) {
+      aff_setOptions([]);
+    }
+  }, [aff_open]);
+
   return (
     <Box position={'relative'} zIndex={2}>
-      <Box width={1} height={1} position={'absolute'} overflow={'hidden'}>
-        <Box
-          width={1}
-          height={1}
-          position={'absolute'}
-          top={'50%'}
-          left={'50%'}
-          sx={{ transform: 'translate(-50%,-50%)' }}
-        >
-          <iframe
-            frameBorder="0"
-            allowFullScreen={true}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            title="YouTube video player"
-            width="100%"
-            height="100%"
-            src="https://www.youtube.com/embed/0qisGSwZym4?autoplay=1&controls=0&showinfo=0&mute=1&loop=1&playlist=0qisGSwZym4"
-          />
-        </Box>
-      </Box>
       <Box
         position={'relative'}
         zIndex={2}
@@ -77,8 +188,8 @@ const Hero = () => {
         sx={{
           '&::after': {
             content: '""',
-            backgroundColor: theme.palette.primary.dark,
-            backgroundImage: `linear-gradient(315deg, ${theme.palette.primary.dark} 0%, #031024 60%)`,
+            backgroundColor: theme.palette.primary.light,
+            backgroundImage: `linear-gradient(315deg, ${theme.palette.primary.light} 0%, #9cb5db 50%)`,
             opacity: '0.9',
             width: 1,
             height: 1,
@@ -103,18 +214,7 @@ const Hero = () => {
                   fontWeight: 700,
                 }}
               >
-                We craft beautiful websites and digital products
-              </Typography>
-              <Typography
-                variant={'h6'}
-                align={'center'}
-                sx={{
-                  color: theme.palette.common.white,
-                  fontWeight: 700,
-                }}
-              >
-                We design, develop and launch websites and products for
-                startups, companies and ourselves.
+                Find out the Top influential researchers
               </Typography>
             </Box>
             <Box
@@ -137,41 +237,57 @@ const Hero = () => {
                     display={'flex'}
                     flexDirection={{ xs: 'column', md: 'row' }}
                   >
-                    <TextField
-                      sx={{
-                        height: 54,
-                        marginRight: { xs: 0, md: 2 },
-                        marginBottom: { xs: 4, md: 0 },
-                      }}
-                      variant="outlined"
-                      color="primary"
-                      size="medium"
-                      label="Name"
-                      fullWidth
-                      name={'name'}
-                      value={formik.values.name}
-                      onChange={formik.handleChange}
-                      error={formik.touched.name && Boolean(formik.errors.name)}
-                      helperText={formik.touched.name && formik.errors.name}
-                    />
-                    <TextField
-                      sx={{
-                        height: 54,
-                      }}
-                      variant="outlined"
-                      color="primary"
-                      size="medium"
-                      label="Email"
-                      fullWidth
-                      name={'email'}
-                      value={formik.values.email}
-                      onChange={formik.handleChange}
-                      error={
-                        formik.touched.email && Boolean(formik.errors.email)
-                      }
-                      helperText={formik.touched.email && formik.errors.email}
-                    />
+
+                    <Box width={0.5}>
+                      <Autocomplete
+                        id="Autocomplete_aff"
+                        sx={{
+                          marginRight: { xs: 0, md: 2 },
+                          marginBottom: { xs: 4, md: 0 },
+                        }}
+                        open={aff_open}
+                        onOpen={() => {
+                          aff_setOpen(true);
+                        }}
+                        onClose={() => {
+                          aff_setOpen(false);
+                        }}
+                        isOptionEqualToValue={(option, value) => option.title === value.title}
+                        getOptionLabel={(option) => option.title}
+                        options={aff_options}
+                        loading={aff_loading}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            sx={{
+                              height: 54,
+                              marginRight: { xs: 0, md: 2 },
+                              marginBottom: { xs: 4, md: 0 },
+                            }}
+                            variant="outlined"
+                            color="primary"
+                            size="medium"
+                            label="Affiliation"
+                            fullWidth
+                            name={'affiliation'}
+                            value={formik.values.TextField}
+                            onChange={formik.handleChange}
+                          >
+                            InputProps={{
+                              ...params.InputProps,
+                              endAdornment: (
+                                <React.Fragment>
+                                  {aff_loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                  {params.InputProps.endAdornment}
+                                </React.Fragment>
+                              ),
+                            }}
+                          </TextField>
+                        )}
+                      ></Autocomplete>
+                    </Box>
                   </Box>
+
                   <Box>
                     <Button
                       sx={{ height: 54, whiteSpace: 'nowrap', minWidth: 100 }}
@@ -187,6 +303,21 @@ const Hero = () => {
                 </Box>
               </form>
             </Box>
+          </Box>
+
+
+          <Box height={1} marginTop={7}>
+            <DataGrid
+              rows={rows}
+              columns={columns}
+              initialState={{
+                pagination: {
+                  paginationModel: { page: 0, pageSize: 5 },
+                },
+              }}
+              pageSizeOptions={[5, 10]}
+              checkboxSelection
+            />
           </Box>
         </Container>
       </Box>

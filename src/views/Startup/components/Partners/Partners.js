@@ -5,15 +5,14 @@ import Box from '@mui/material/Box';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 const mock = [
-  'https://assets.maccarianagency.com/svg/logos/airbnb-original.svg',
-  'https://assets.maccarianagency.com/svg/logos/amazon-original.svg',
-  'https://assets.maccarianagency.com/svg/logos/fitbit-original.svg',
-  'https://assets.maccarianagency.com/svg/logos/netflix-original.svg',
-  'https://assets.maccarianagency.com/svg/logos/google-original.svg',
-  'https://assets.maccarianagency.com/svg/logos/paypal-original.svg',
-  'https://assets.maccarianagency.com/svg/logos/hubspot-original.svg',
-  'https://assets.maccarianagency.com/svg/logos/mapbox-original.svg',
-  'https://assets.maccarianagency.com/svg/logos/slack-original.svg',
+  // https://commons.wikimedia.org/wiki/Category:SVG_logos_of_universities_and_colleges_in_the_United_States
+  'https://download.logo.wine/logo/Yale_University/Yale_University-Logo.wine.png',
+  'https://download.logo.wine/logo/Massachusetts_Institute_of_Technology/Massachusetts_Institute_of_Technology-Logo.wine.png',
+  'https://download.logo.wine/logo/University_of_Pennsylvania/University_of_Pennsylvania-Logo.wine.png',
+  'https://download.logo.wine/logo/Duke_University/Duke_University-Logo.wine.png',
+  'https://download.logo.wine/logo/California_Institute_of_Technology/California_Institute_of_Technology-Logo.wine.png',
+  'https://download.logo.wine/logo/University_of_California%2C_Berkeley/University_of_California%2C_Berkeley-Logo.wine.png',
+  'https://download.logo.wine/logo/University_of_California%2C_Los_Angeles/University_of_California%2C_Los_Angeles-Logo.wine.png',
 ];
 
 const Partners = () => {

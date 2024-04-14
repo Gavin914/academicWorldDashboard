@@ -23,6 +23,9 @@ const Startup = () => {
         </Container>
       </Box>
       <Container>
+        
+      </Container>
+      <Container>
         <Features />
       </Container>
       <Container>
